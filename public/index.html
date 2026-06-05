@@ -94,11 +94,10 @@
 
 <script>
 // ── Config ──────────────────────────────────────────────────────────────────
-const PROXY = 'http://localhost:3001/api/ask';
+const PROXY = 'https://the-oracle-ip6c.onrender.com/api/ask';
 
 // ── State ───────────────────────────────────────────────────────────────────
-let S = { phase: 'setup', apiKey: localStorage.getItem('aki_key') || '', history: [], qCount: 0, question: '', guess: null, useAI: true, err: '' };
-if (S.apiKey) S.phase = 'start';
+let S = { phase: 'start', apiKey: '', history: [], qCount: 0, question: '', guess: null, useAI: true, err: '' };
 
 // ── Local fallback ───────────────────────────────────────────────────────────
 const CHARS = [
@@ -182,7 +181,7 @@ async function aiStep() {
     : 'Q&A so far:\n\n'+S.history.map(h=>`Q: ${h.q}\nA: ${h.a}`).join('\n\n')+'\n\nWhat next?';
   const res = await fetch(PROXY, {
     method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':S.apiKey},
+    headers:{'Content-Type':'application/json'},
     body:JSON.stringify({history:S.history})
   });
   if(!res.ok) throw new Error(`Proxy error ${res.status}`);
@@ -228,24 +227,13 @@ function render(){
     ${badge}
   </header>`;
 
-  if(S.phase==='setup'){
-    app.innerHTML=`${header}<div class="setup-card">
-      <h2>Enter your Anthropic API key to enable AI mode</h2>
-      <div class="input-row">
-        <input id="key-input" type="password" placeholder="sk-ant-..." value="${S.apiKey}"/>
-        <button class="btn-primary inline" onclick="saveKey()">Save</button>
-      </div>
-      <p class="hint">Your key is stored locally and never sent anywhere except your local proxy. Get one at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
-    </div>`;
-    return;
-  }
+
 
   if(S.phase==='start'){
     app.innerHTML=`${header}<div class="card">
       <p class="intro">Think of any character — celebrity, athlete, politician, fictional hero, villain, historical figure — and I'll figure out who it is.</p>
       <p class="hint-text">Answer honestly. The genie adapts its questions based on your answers.</p>
       <button class="btn-primary" onclick="step().finally(render)">Let's go ✨</button>
-      <button class="btn-back" style="margin-top:10px;display:block;" onclick="S.phase='setup';render()">⚙️ Change API key</button>
     </div>`;
     return;
   }
@@ -328,8 +316,5 @@ function render(){
 
 render();
 </script>
-<footer style="text-align:center;padding:1.5rem 0 0.5rem;font-size:12px;color:#5c5c6e;">
-  Made by <a href="https://github.com/lewisa26-netizen" target="_blank" style="color:#7F77DD;text-decoration:none;">lewisa26-netizen</a>
-</footer>
 </body>
 </html>
