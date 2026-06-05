@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>🧞 The All-Knowing Genie</title>
+<style>
+  :root {
+    --bg: #111113;
+    --bg2: #1c1c20;
+    --bg3: #26262c;
+    --border: #2e2e36;
+    --text: #ededef;
+    --text2: #9898a6;
+    --text3: #5c5c6e;
+    --purple: #7F77DD;
+    --purple-dark: #534AB7;
+    --purple-deeper: #3C3489;
+    --green: #3a6a3a;
+    --green-text: #6BBF6B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
+  #app { width: 100%; max-width: 540px; }
+
+  /* Setup screen */
+  .setup-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem; }
+  .setup-card h2 { font-size: 15px; font-weight: 500; margin-bottom: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: .05em; font-size: 11px; }
+  .input-row { display: flex; gap: 8px; }
+  input[type=text], input[type=password] { flex: 1; padding: 10px 12px; background: var(--bg3); border: 0.5px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; outline: none; }
+  input:focus { border-color: var(--purple); }
+  .hint { font-size: 12px; color: var(--text3); margin-top: 6px; }
+  .hint a { color: var(--purple); text-decoration: none; }
+
+  /* Header */
+  header { text-align: center; margin-bottom: 1.5rem; }
+  .genie-emoji { font-size: 62px; line-height: 1; margin-bottom: 8px; }
+  header h1 { font-size: 22px; font-weight: 600; margin-bottom: 3px; }
+  header p { font-size: 14px; color: var(--text2); }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 20px; margin-top: 6px; }
+  .badge-ai { background: #1a1a3a; color: #9B94FF; border: 0.5px solid var(--purple-dark); }
+  .badge-local { background: #1a2a1a; color: var(--green-text); border: 0.5px solid var(--green); }
+
+  /* Cards */
+  .card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 14px; padding: 1.4rem; }
+  .card p.intro { font-size: 16px; font-weight: 500; line-height: 1.5; margin-bottom: 10px; }
+  .card p.hint-text { font-size: 13px; color: var(--text2); margin-bottom: 1.4rem; }
+
+  /* Progress */
+  .prog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1.2rem; }
+  .prog-track { flex: 1; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--purple); border-radius: 2px; transition: width .4s; }
+  .q-num { font-size: 12px; color: var(--text3); white-space: nowrap; }
+
+  /* Question */
+  .question { font-size: 18px; font-weight: 500; line-height: 1.5; margin-bottom: 1.2rem; }
+
+  /* Answer buttons */
+  .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 8px; }
+  .ans-btn { padding: 11px 8px; border-radius: 8px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text); font-size: 14px; cursor: pointer; transition: background .1s, transform .1s; }
+  .ans-btn:hover { background: var(--bg3); }
+  .ans-btn:active { transform: scale(.97); }
+
+  /* Primary / secondary buttons */
+  .btn-primary { display: block; width: 100%; padding: 12px; background: var(--purple-dark); color: #EEEDFE; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; transition: background .1s; }
+  .btn-primary:hover { background: var(--purple-deeper); }
+  .btn-primary.inline { display: inline-block; width: auto; padding: 10px 22px; }
+  .btn-sec { display: inline-block; padding: 10px 22px; background: var(--bg2); color: var(--text); border: 0.5px solid var(--border); border-radius: 8px; font-size: 14px; cursor: pointer; }
+  .btn-sec:hover { background: var(--bg3); }
+  .back-btn { background: none; border: none; color: var(--text3); font-size: 13px; cursor: pointer; padding: 6px 0 0; display: block; }
+  .back-btn:hover { color: var(--text2); }
+
+  /* Spinner */
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--bg3); border-top-color: var(--purple); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .center { text-align: center; padding: 2.2rem 1rem; }
+  .big-emoji { font-size: 56px; margin-bottom: 10px; }
+  .result-title { font-size: 21px; font-weight: 500; margin-bottom: 6px; }
+  .result-sub { font-size: 14px; color: var(--text2); margin-bottom: 1.4rem; line-height: 1.55; }
+  .result-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+  /* Confidence bar */
+  .conf-wrap { margin-bottom: 1.4rem; }
+  .conf-lbl { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+  .conf-track { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .conf-fill { height: 100%; background: var(--purple-dark); border-radius: 3px; transition: width .5s; }
+
+  /* Error */
+  .err { margin-top: 10px; padding: 10px 12px; background: #2a1a1a; border: 0.5px solid #6a2a2a; border-radius: 8px; font-size: 13px; color: #ff8888; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const PROXY = 'http://localhost:3001/api/ask';
+
+// ── State ───────────────────────────────────────────────────────────────────
+let S = { phase: 'setup', apiKey: localStorage.getItem('aki_key') || '', history: [], qCount: 0, question: '', guess: null, useAI: true, err: '' };
+if (S.apiKey) S.phase = 'start';
+
+// ── Local fallback ───────────────────────────────────────────────────────────
+const CHARS = [
+  {n:"Harry Potter",e:"⚡",d:"The boy who lived",t:{real:0,male:1,alive:1,fm:1,hero:0,ani:0,human:1,bad:0,lead:0,world:1,magic:1,young:1,funny:0,animal:0,fight:1,smart:1,sport:0}},
+  {n:"Hermione Granger",e:"📚",d:"The brightest witch of her age",t:{real:0,male:0,alive:1,fm:1,hero:0,ani:0,human:1,bad:0,lead:0,world:1,magic:1,young:1,funny:0,animal:0,fight:0,smart:1,sport:0}},
+  {n:"Darth Vader",e:"🌑",d:"Dark lord of the Sith",t:{real:0,male:1,alive:0,fm:1,hero:1,ani:0,human:1,bad:1,lead:1,world:1,magic:1,young:0,funny:0,animal:0,fight:1,smart:1,sport:0}},
+  {n:"SpongeBob",e:"🧽",d:"Lives in a pineapple under the sea",t:{real:0,male:1,alive:1,fm:1,hero:0,ani:1,human:0,bad:0,lead:0,world:1,magic:0,young:0,funny:1,animal:1,fight:0,smart:0,sport:0}},
+  {n:"Batman",e:"🦇",d:"The Dark Knight of Gotham",t:{real:0,male:1,alive:1,fm:1,hero:1,ani:0,human:1,bad:0,lead:0,world:1,magic:0,young:0,funny:0,animal:0,fight:1,smart:1,sport:0}},
+  {n:"Wonder Woman",e:"👑",d:"Amazonian warrior princess",t:{real:0,male:0,alive:1,fm:1,hero:1,ani:0,human:1,bad:0,lead:1,world:1,magic:1,young:0,funny:0,animal:0,fight:1,smart:1,sport:0}},
+  {n:"The Joker",e:"🃏",d:"Clown prince of crime",t:{real:0,male:1,alive:1,fm:1,hero:1,ani:0,human:1,bad:1,lead:0,world:1,magic:0,young:0,funny:1,animal:0,fight:0,smart:1,sport:0}},
+  {n:"Sherlock Holmes",e:"🔍",d:"The world's greatest detective",t:{real:0,male:1,alive:0,fm:1,hero:0,ani:0,human:1,bad:0,lead:0,world:1,magic:0,young:0,funny:0,animal:0,fight:0,smart:1,sport:0}},
+  {n:"Yoda",e:"🟢",d:"The wise Jedi master",t:{real:0,male:1,alive:0,fm:1,hero:0,ani:0,human:0,bad:0,lead:1,world:1,magic:1,young:0,funny:1,animal:0,fight:1,smart:1,sport:0}},
+  {n:"Gandalf",e:"🧙",d:"A wizard is never late",t:{real:0,male:1,alive:0,fm:1,hero:0,ani:0,human:0,bad:0,lead:1,world:1,magic:1,young:0,funny:0,animal:0,fight:1,smart:1,sport:0}},
+  {n:"Elsa",e:"❄️",d:"The Snow Queen of Arendelle",t:{real:0,male:0,alive:1,fm:1,hero:0,ani:1,human:1,bad:0,lead:1,world:1,magic:1,young:1,funny:0,animal:0,fight:0,smart:0,sport:0}},
+  {n:"Simba",e:"🦁",d:"Future king of the Pride Lands",t:{real:0,male:1,alive:1,fm:1,hero:0,ani:1,human:0,bad:0,lead:1,world:1,magic:0,young:1,funny:0,animal:1,fight:1,smart:0,sport:0}},
+  {n:"Pikachu",e:"⚡",d:"Pika pika!",t:{real:0,male:1,alive:1,fm:1,hero:0,ani:1,human:0,bad:0,lead:0,world:1,magic:1,young:1,funny:0,animal:1,fight:1,smart:0,sport:0}},
+  {n:"Shrek",e:"🟩",d:"Loveable ogre from the swamp",t:{real:0,male:1,alive:1,fm:1,hero:0,ani:1,human:0,bad:0,lead:0,world:1,magic:0,young:0,funny:1,animal:0,fight:1,smart:0,sport:0}},
+  {n:"Tony Stark",e:"🦾",d:"Genius billionaire playboy philanthropist",t:{real:0,male:1,alive:0,fm:1,hero:1,ani:0,human:1,bad:0,lead:1,world:1,magic:0,young:0,funny:1,animal:0,fight:1,smart:1,sport:0}},
+  {n:"Voldemort",e:"🐍",d:"He who must not be named",t:{real:0,male:1,alive:0,fm:1,hero:0,ani:0,human:1,bad:1,lead:1,world:1,magic:1,young:0,funny:0,animal:0,fight:1,smart:1,sport:0}},
+  {n:"Naruto",e:"🍥",d:"Believe it!",t:{real:0,male:1,alive:1,fm:1,hero:0,ani:1,human:1,bad:0,lead:0,world:1,magic:1,young:1,funny:1,animal:0,fight:1,smart:0,sport:0}},
+  {n:"Elon Musk",e:"🚀",d:"Tech billionaire and entrepreneur",t:{real:1,male:1,alive:1,fm:0,hero:0,ani:0,human:1,bad:0,lead:1,world:1,magic:0,young:0,funny:0,animal:0,fight:0,smart:1,sport:0}},
+  {n:"Taylor Swift",e:"🎤",d:"Pop superstar and songwriter",t:{real:1,male:0,alive:1,fm:0,hero:0,ani:0,human:1,bad:0,lead:0,world:1,magic:0,young:1,funny:0,animal:0,fight:0,smart:1,sport:0}},
+  {n:"Cristiano Ronaldo",e:"⚽",d:"Football legend",t:{real:1,male:1,alive:1,fm:0,hero:0,ani:0,human:1,bad:0,lead:0,world:1,magic:0,young:0,funny:0,animal:0,fight:0,smart:0,sport:1}},
+  {n:"Albert Einstein",e:"🧠",d:"Theoretical physicist, E=mc²",t:{real:1,male:1,alive:0,fm:0,hero:0,ani:0,human:1,bad:0,lead:0,world:1,magic:0,young:0,funny:0,animal:0,fight:0,smart:1,sport:0}},
+  {n:"Cleopatra",e:"🐍",d:"Last ruler of Ptolemaic Egypt",t:{real:1,male:0,alive:0,fm:0,hero:0,ani:0,human:1,bad:0,lead:1,world:1,magic:0,young:0,funny:0,animal:0,fight:0,smart:1,sport:0}},
+  {n:"Frodo Baggins",e:"💍",d:"The ring-bearer of the fellowship",t:{real:0,male:1,alive:1,fm:1,hero:0,ani:0,human:0,bad:0,lead:0,world:1,magic:0,young:1,funny:0,animal:0,fight:0,smart:0,sport:0}},
+  {n:"Goku",e:"🐉",d:"Saiyan warrior, protector of Earth",t:{real:0,male:1,alive:1,fm:1,hero:0,ani:1,human:0,bad:0,lead:0,world:1,magic:1,young:0,funny:1,animal:0,fight:1,smart:0,sport:0}},
+  {n:"Moana",e:"🌊",d:"Daughter of the chief who sails beyond the reef",t:{real:0,male:0,alive:1,fm:1,hero:0,ani:1,human:1,bad:0,lead:1,world:1,magic:0,young:1,funny:0,animal:0,fight:0,smart:1,sport:0}},
+];
+
+const QS = [
+  {id:"real",  q:"Is your character a real person (not fictional)?"},
+  {id:"alive", q:"Is this person currently alive?",              dep:{real:1}},
+  {id:"sport", q:"Are they primarily known for sport?",          dep:{real:1}},
+  {id:"lead",  q:"Are they a political leader or royalty?",      dep:{real:1,sport:0}},
+  {id:"fm",    q:"Is your character from a movie, TV show, book, or game?", dep:{real:0}},
+  {id:"ani",   q:"Is your character animated (cartoon or anime)?", dep:{real:0}},
+  {id:"hero",  q:"Is your character a superhero or supervillain?", dep:{real:0}},
+  {id:"male",  q:"Is your character male?"},
+  {id:"human", q:"Is your character human (or mostly human)?"},
+  {id:"bad",   q:"Would most people consider your character a villain?"},
+  {id:"world", q:"Is your character known worldwide?"},
+  {id:"magic", q:"Does your character have magical or supernatural powers?"},
+  {id:"young", q:"Is your character typically depicted as young (child or teen)?"},
+  {id:"funny", q:"Is your character known for being funny or comedic?"},
+  {id:"animal",q:"Is your character an animal or non-human creature?"},
+  {id:"fight", q:"Is your character a fighter, warrior, or soldier?"},
+  {id:"smart", q:"Is your character known for their intelligence?"},
+];
+
+function yn(a) { return (a==='Yes'||a==='Probably yes') ? 1 : 0; }
+function buildNumAns() {
+  const m={}, qmap={};
+  QS.forEach(q=>qmap[q.q]=q.id);
+  S.history.forEach(h=>{ const id=qmap[h.q]; if(id) m[id]=yn(h.a); });
+  return m;
+}
+function localNext(ans) {
+  for(const q of QS) {
+    if(ans[q.id]!==undefined) continue;
+    if(q.dep) { let ok=true; for(const[k,v] of Object.entries(q.dep)) if(ans[k]!==v){ok=false;break;} if(!ok) continue; }
+    return q.q;
+  }
+  return null;
+}
+function localGuess(ans) {
+  let best=null,bestS=-99;
+  for(const c of CHARS) {
+    let sc=0,m=0;
+    for(const[k,v] of Object.entries(ans)) { if(c.t[k]===undefined)continue; m++; sc+=(c.t[k]===v)?1:-2; }
+    const s=m>0?sc/m:0;
+    if(s>bestS){bestS=s;best=c;}
+  }
+  return {name:best?.n,emoji:best?.e,description:best?.d,confidence:Math.max(40,Math.min(97,Math.round(50+bestS*30)))};
+}
+
+// ── AI call (via local proxy) ─────────────────────────────────────────────
+async function aiStep() {
+  const content = S.history.length===0
+    ? 'Game starting. Ask your first question.'
+    : 'Q&A so far:\n\n'+S.history.map(h=>`Q: ${h.q}\nA: ${h.a}`).join('\n\n')+'\n\nWhat next?';
+  const res = await fetch(PROXY, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':S.apiKey},
+    body:JSON.stringify({history:S.history})
+  });
+  if(!res.ok) throw new Error(`Proxy error ${res.status}`);
+  return res.json();
+}
+
+// ── Step logic ───────────────────────────────────────────────────────────
+async function step() {
+  S.phase='thinking'; S.err=''; render();
+  const numAns = buildNumAns();
+  if(S.useAI) {
+    try {
+      const r = await aiStep();
+      if(r.action==='question'&&r.question){ S.question=r.question; S.qCount++; S.phase='question'; return; }
+      if(r.action==='guess'&&r.name){ S.guess=r; S.phase='guess'; return; }
+      S.phase='giveup'; return;
+    } catch(e) {
+      S.useAI=false; S.err='AI unavailable — switched to local mode. ('+(e.message)+')';
+    }
+  }
+  // local
+  const shouldGuess = S.qCount>=12||(S.qCount>=6&&localGuess(numAns).confidence>=85);
+  const nextQ=localNext(numAns);
+  if(shouldGuess||!nextQ){ const g=localGuess(numAns); S.guess=g; S.phase='guess'; }
+  else { S.question=nextQ; S.qCount++; S.phase='question'; }
+}
+
+function answer(a){ if(!S.question)return; S.history.push({q:S.question,a}); step().finally(render); }
+function goBack(){ if(!S.history.length)return; const l=S.history.pop(); S.question=l.q; S.qCount=Math.max(1,S.qCount-1); S.phase='question'; render(); }
+function endGame(ok){ S.phase=ok?'correct':'wrong'; render(); }
+function reset(){ S={...S,phase:'start',history:[],qCount:0,question:'',guess:null,useAI:true,err:''}; render(); }
+function saveKey(){ S.apiKey=document.getElementById('key-input').value.trim(); if(S.apiKey){ localStorage.setItem('aki_key',S.apiKey); S.phase='start'; render(); } }
+
+// ── Render ───────────────────────────────────────────────────────────────
+function render(){
+  const app=document.getElementById('app');
+  const badge=`<span class="badge ${S.useAI?'badge-ai':'badge-local'}">${S.useAI?'🤖 AI mode':'💾 Local mode'}</span>`;
+
+  const header=`<header>
+    <div class="genie-emoji">🧞</div>
+    <h1>The All-Knowing Genie</h1>
+    <p>Think of <em>anyone</em> — real or fictional</p>
+    ${badge}
+  </header>`;
+
+  if(S.phase==='setup'){
+    app.innerHTML=`${header}<div class="setup-card">
+      <h2>Enter your Anthropic API key to enable AI mode</h2>
+      <div class="input-row">
+        <input id="key-input" type="password" placeholder="sk-ant-..." value="${S.apiKey}"/>
+        <button class="btn-primary inline" onclick="saveKey()">Save</button>
+      </div>
+      <p class="hint">Your key is stored locally and never sent anywhere except your local proxy. Get one at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+    </div>`;
+    return;
+  }
+
+  if(S.phase==='start'){
+    app.innerHTML=`${header}<div class="card">
+      <p class="intro">Think of any character — celebrity, athlete, politician, fictional hero, villain, historical figure — and I'll figure out who it is.</p>
+      <p class="hint-text">Answer honestly. The genie adapts its questions based on your answers.</p>
+      <button class="btn-primary" onclick="step().finally(render)">Let's go ✨</button>
+      <button class="btn-back" style="margin-top:10px;display:block;" onclick="S.phase='setup';render()">⚙️ Change API key</button>
+    </div>`;
+    return;
+  }
+
+  if(S.phase==='thinking'){
+    app.innerHTML=`${header}<div class="card center"><div class="spinner"></div><p style="color:#9898a6;font-size:14px;">The genie is concentrating…</p></div>`;
+    return;
+  }
+
+  if(S.phase==='question'){
+    const prog=Math.min(S.qCount/20,1);
+    app.innerHTML=`${header}<div class="card">
+      <div class="prog-row">
+        <div class="prog-track"><div class="prog-fill" style="width:${Math.round(prog*100)}%"></div></div>
+        <span class="q-num">Q${S.qCount}</span>
+      </div>
+      <p class="question">${S.question}</p>
+      <div class="ans-grid">
+        <button class="ans-btn" onclick="answer('Yes')">✅ Yes</button>
+        <button class="ans-btn" onclick="answer('No')">❌ No</button>
+        <button class="ans-btn" onclick="answer('Probably yes')">🟡 Probably yes</button>
+        <button class="ans-btn" onclick="answer('Probably no')">🟠 Probably no</button>
+        <button class="ans-btn" onclick="answer('I don\\'t know')">🤷 I don't know</button>
+        <button class="ans-btn" onclick="answer('Irrelevant')">➖ Irrelevant</button>
+      </div>
+      ${S.err?`<div class="err">${S.err}</div>`:''}
+      ${S.history.length>0?`<button class="back-btn" onclick="goBack()">← Back</button>`:''}
+    </div>`;
+    return;
+  }
+
+  if(S.phase==='guess'){
+    const conf=Math.round(S.guess.confidence||80);
+    app.innerHTML=`${header}<div class="card" style="text-align:center;">
+      <p style="font-size:13px;color:#9898a6;margin-bottom:12px;">After ${S.qCount} questions, I think I know…</p>
+      <div class="big-emoji">${S.guess.emoji||'🎯'}</div>
+      <p class="result-title">${S.guess.name}</p>
+      <p class="result-sub">${S.guess.description||''}</p>
+      <div class="conf-wrap">
+        <div class="conf-lbl">Confidence: ${conf}%</div>
+        <div class="conf-track"><div class="conf-fill" style="width:${conf}%"></div></div>
+      </div>
+      <div class="result-row">
+        <button class="btn-primary inline" onclick="endGame(true)">Yes, correct! 🎉</button>
+        <button class="btn-sec" onclick="endGame(false)">No, wrong ❌</button>
+      </div>
+    </div>`;
+    return;
+  }
+
+  if(S.phase==='correct'){
+    app.innerHTML=`${header}<div class="card center">
+      <div class="big-emoji">🎉</div>
+      <p class="result-title">Got it in ${S.qCount} questions!</p>
+      <p class="result-sub">It was <strong>${S.guess.name}</strong> — the genie always knows.</p>
+      <button class="btn-primary inline" onclick="reset()">Play again</button>
+    </div>`;
+    return;
+  }
+
+  if(S.phase==='wrong'){
+    app.innerHTML=`${header}<div class="card center">
+      <div class="big-emoji">🤔</div>
+      <p class="result-title">You beat the genie!</p>
+      <p class="result-sub">It wasn't <strong>${S.guess.name}</strong>. Your character remains a mystery!</p>
+      <button class="btn-primary inline" onclick="reset()">Play again</button>
+    </div>`;
+    return;
+  }
+
+  if(S.phase==='giveup'){
+    app.innerHTML=`${header}<div class="card center">
+      <div class="big-emoji">🏳️</div>
+      <p class="result-title">The genie admits defeat.</p>
+      <p class="result-sub">After ${S.qCount} questions, your character remains a mystery. You win!</p>
+      <button class="btn-primary inline" onclick="reset()">Play again</button>
+    </div>`;
+  }
+}
+
+render();
+</script>
+<footer style="text-align:center;padding:1.5rem 0 0.5rem;font-size:12px;color:#5c5c6e;">
+  Made by <a href="https://github.com/lewisa26-netizen" target="_blank" style="color:#7F77DD;text-decoration:none;">lewisa26-netizen</a>
+</footer>
+</body>
+</html>
