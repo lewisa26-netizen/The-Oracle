@@ -212,6 +212,19 @@ async function step() {
 function answer(a){ if(!S.question)return; S.history.push({q:S.question,a}); step().finally(render); }
 function goBack(){ if(!S.history.length)return; const l=S.history.pop(); S.question=l.q; S.qCount=Math.max(1,S.qCount-1); S.phase='question'; render(); }
 function endGame(ok){ S.phase=ok?'correct':'wrong'; render(); }
+
+function sendFeedback() {
+  const input = document.getElementById('feedback-input');
+  const msg = document.getElementById('feedback-msg');
+  const character = input && input.value.trim();
+  if (!character) { if(msg) msg.textContent = 'Please enter a character name.'; return; }
+  const subject = encodeURIComponent('The Oracle — Missed Character');
+  const history = S.history.map(h => 'Q: ' + h.q + '\nA: ' + h.a).join('\n');
+  const body = encodeURIComponent('The Oracle guessed: ' + (S.guess && S.guess.name || '?') + '\nActual character: ' + character + '\n\nQ&A history:\n' + history);
+  window.open('mailto:lewisa26@cashmere.school.nz?subject=' + subject + '&body=' + body);
+  if(msg) msg.textContent = 'Thanks! Your email app should have opened.';
+  if(input) input.value = '';
+}
 function reset(){ S={...S,phase:'start',history:[],qCount:0,question:'',guess:null,useAI:true,err:''}; render(); }
 function saveKey(){ S.apiKey=document.getElementById('key-input').value.trim(); if(S.apiKey){ localStorage.setItem('aki_key',S.apiKey); S.phase='start'; render(); } }
 
@@ -299,6 +312,14 @@ function render(){
       <div class="big-emoji">🤔</div>
       <p class="result-title">You beat the Oracle!</p>
       <p class="result-sub">It wasn't <strong>${S.guess.name}</strong>. Your character remains a mystery!</p>
+      <div style="margin:1rem 0;text-align:left;">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:8px;">Who were you thinking of? Help the Oracle learn!</p>
+        <div style="display:flex;gap:8px;">
+          <input id="feedback-input" type="text" placeholder="Character name..." style="flex:1;padding:10px 12px;background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none;"/>
+          <button class="btn-primary inline" onclick="sendFeedback()">Send</button>
+        </div>
+        <p id="feedback-msg" style="font-size:12px;color:var(--text2);margin-top:6px;"></p>
+      </div>
       <button class="btn-primary inline" onclick="reset()">Play again</button>
     </div>`;
     return;
