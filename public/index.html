@@ -221,7 +221,7 @@ function sendFeedback() {
   const subject = encodeURIComponent('The Oracle — Missed Character');
   const history = S.history.map(h => 'Q: ' + h.q + '\nA: ' + h.a).join('\n');
   const body = encodeURIComponent('The Oracle guessed: ' + (S.guess && S.guess.name || '?') + '\nActual character: ' + character + '\n\nQ&A history:\n' + history);
-  window.open('mailto:lewisa26@cashmere.school.nz?subject=' + subject + '&body=' + body);
+  window.open('https://mail.google.com/mail/?view=cm&to=lewisa26@cashmere.school.nz&su=' + subject + '&body=' + body, '_blank');
   if(msg) msg.textContent = 'Thanks! Your email app should have opened.';
   if(input) input.value = '';
 }
