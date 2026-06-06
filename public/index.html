@@ -213,6 +213,18 @@ function answer(a){ if(!S.question)return; S.history.push({q:S.question,a}); ste
 function goBack(){ if(!S.history.length)return; const l=S.history.pop(); S.question=l.q; S.qCount=Math.max(1,S.qCount-1); S.phase='question'; render(); }
 function endGame(ok){ S.phase=ok?'correct':'wrong'; render(); }
 
+function shareResult(won) {
+  const url = 'https://the-oracle-ip6c.onrender.com';
+  const text = won
+    ? \`The Oracle guessed my character in \${S.qCount} questions! Can you stump it? \${url}\`
+    : \`I stumped The Oracle after \${S.qCount} questions! Think you can do better? \${url}\`;
+  if (navigator.share) {
+    navigator.share({ text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+  }
+}
+
 function sendFeedback() {
   const input = document.getElementById('feedback-input');
   const msg = document.getElementById('feedback-msg');
