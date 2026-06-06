@@ -34,7 +34,7 @@
 
   /* Header */
   header { text-align: center; margin-bottom: 1.5rem; }
-  .genie-emoji { font-size: 62px; line-height: 1; margin-bottom: 8px; }
+  .Oracle-emoji { font-size: 62px; line-height: 1; margin-bottom: 8px; }
   header h1 { font-size: 22px; font-weight: 600; margin-bottom: 3px; }
   header p { font-size: 14px; color: var(--text2); }
   .badge { display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 20px; margin-top: 6px; }
@@ -221,7 +221,7 @@ function render(){
   const badge=`<span class="badge ${S.useAI?'badge-ai':'badge-local'}">${S.useAI?'🤖 AI mode':'💾 Local mode'}</span>`;
 
   const header=`<header>
-    <div class="genie-emoji">🔮</div>
+    <div class="Oracle-emoji">🔮</div>
     <h1>The Oracle</h1>
     <p>Think of <em>anyone</em> — real or fictional</p>
     ${badge}
@@ -232,14 +232,14 @@ function render(){
   if(S.phase==='start'){
     app.innerHTML=`${header}<div class="card">
       <p class="intro">Think of any character — celebrity, athlete, politician, fictional hero, villain, historical figure — and I'll figure out who it is.</p>
-      <p class="hint-text">Answer honestly. The genie adapts its questions based on your answers.</p>
+      <p class="hint-text">Answer honestly. The Oracle adapts its questions based on your answers.</p>
       <button class="btn-primary" onclick="step().finally(render)">Let's go ✨</button>
     </div>`;
     return;
   }
 
   if(S.phase==='thinking'){
-    app.innerHTML=`${header}<div class="card center"><div class="spinner"></div><p style="color:#9898a6;font-size:14px;">The genie is concentrating…</p></div>`;
+    app.innerHTML=`${header}<div class="card center"><div class="spinner"></div><p style="color:#9898a6;font-size:14px;">The Oracle is concentrating…</p></div>`;
     return;
   }
 
@@ -288,7 +288,7 @@ function render(){
     app.innerHTML=`${header}<div class="card center">
       <div class="big-emoji">🎉</div>
       <p class="result-title">Got it in ${S.qCount} questions!</p>
-      <p class="result-sub">It was <strong>${S.guess.name}</strong> — the genie always knows.</p>
+      <p class="result-sub">It was <strong>${S.guess.name}</strong> — the Oracle always knows.</p>
       <button class="btn-primary inline" onclick="reset()">Play again</button>
     </div>`;
     return;
@@ -297,7 +297,7 @@ function render(){
   if(S.phase==='wrong'){
     app.innerHTML=`${header}<div class="card center">
       <div class="big-emoji">🤔</div>
-      <p class="result-title">You beat the genie!</p>
+      <p class="result-title">You beat the Oracle!</p>
       <p class="result-sub">It wasn't <strong>${S.guess.name}</strong>. Your character remains a mystery!</p>
       <button class="btn-primary inline" onclick="reset()">Play again</button>
     </div>`;
@@ -307,7 +307,7 @@ function render(){
   if(S.phase==='giveup'){
     app.innerHTML=`${header}<div class="card center">
       <div class="big-emoji">🏳️</div>
-      <p class="result-title">The genie admits defeat.</p>
+      <p class="result-title">The Oracle admits defeat.</p>
       <p class="result-sub">After ${S.qCount} questions, your character remains a mystery. You win!</p>
       <button class="btn-primary inline" onclick="reset()">Play again</button>
     </div>`;
