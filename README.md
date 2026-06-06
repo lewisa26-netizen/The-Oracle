@@ -2,7 +2,7 @@
 
 An AI-powered guessing game. Think of any character — real or fictional — and the Oracle will figure out who it is through a series of yes/no questions.
 
-**[▶ Play now](https://the-oracle-ip6c.onrender.com)**
+**[Play](https://the-oracle-ip6c.onrender.com)**
 
 Powered by [Groq](https://groq.com) + Llama 3.3 70B.
 
