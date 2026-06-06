@@ -314,7 +314,10 @@ function render(){
       <div class="big-emoji">🎉</div>
       <p class="result-title">Got it in ${S.qCount} questions!</p>
       <p class="result-sub">It was <strong>${S.guess.name}</strong> — the Oracle always knows.</p>
-      <button class="btn-primary inline" onclick="reset()">Play again</button>
+      <div class="result-row" style="margin-bottom:8px;">
+        <button class="btn-primary inline" onclick="reset()">Play again</button>
+        <button class="btn-sec" onclick="shareResult(true)">Share 🔗</button>
+      </div>
     </div>`;
     return;
   }
@@ -332,7 +335,10 @@ function render(){
         </div>
         <p id="feedback-msg" style="font-size:12px;color:var(--text2);margin-top:6px;"></p>
       </div>
-      <button class="btn-primary inline" onclick="reset()">Play again</button>
+      <div class="result-row" style="margin-bottom:8px;">
+        <button class="btn-primary inline" onclick="reset()">Play again</button>
+        <button class="btn-sec" onclick="shareResult(false)">Share 🔗</button>
+      </div>
     </div>`;
     return;
   }
